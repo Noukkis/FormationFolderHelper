@@ -6,6 +6,7 @@
 package app.ihms;
 
 import app.workers.ConfigWorker;
+import java.util.List;
 
 /**
  *
@@ -14,8 +15,8 @@ import app.workers.ConfigWorker;
 public class ModulesCtrl extends DoubleListCtrl{
 
     @Override
-    protected void fillList(ConfigWorker wrk) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected List fillList() {
+        return wrk.getModules();
     }
     
 }

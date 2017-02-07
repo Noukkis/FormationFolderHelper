@@ -37,10 +37,10 @@ public abstract class DoubleListCtrl implements Initializable, TabController {
     public void update() {
         lstLeft.getItems().clear();
         lstRight.getItems().clear();
-        fillList(wrk);
+        lstLeft.getItems().addAll();
     }
     
-    protected abstract void fillList(ConfigWorker wrk);
+    protected abstract List fillList();
         
     @Override
     public void init(ConfigWorker wrk) {

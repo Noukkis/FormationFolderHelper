@@ -67,8 +67,8 @@ public class ElevesController extends DoubleListCtrl{
     }
 
     @Override
-    protected void fillList(ConfigWorker wrk) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected List fillList() {
+        return wrk.getEleves();
     }
 
 }
