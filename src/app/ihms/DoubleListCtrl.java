@@ -22,12 +22,12 @@ import javafx.scene.control.SelectionMode;
  */
 public abstract class DoubleListCtrl implements Initializable, TabController {
     
-    private ConfigWorker wrk;
+    protected ConfigWorker wrk;
 
     @FXML
-    private ListView lstLeft;
+    protected ListView lstLeft;
     @FXML
-    private ListView lstRight;
+    protected ListView lstRight;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {

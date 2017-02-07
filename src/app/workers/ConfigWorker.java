@@ -105,7 +105,7 @@ public class ConfigWorker {
             }
         }
         ElevesController ctrl = (ElevesController) ctrls.get("Eleves");
-        ctrl.update(eleves);
+        //ctrl.update(eleves);
         return eleves;
     }
 
@@ -167,8 +167,8 @@ public class ConfigWorker {
         viewCtrl.setElevesPath(config.getElevesPath());
         viewCtrl.setFolderPath(config.getFolderPath());
         viewCtrl.update();
-        elevesCtrl.update(eleves);
-        modulesCtrl.update(config.getModules());
+        elevesCtrl.update();
+        modulesCtrl.update();
         elevesCtrl.toRight(config.getIgnoredEleves());
         modulesCtrl.toRight(config.getIgnoredModules(modules));
         keywordsCtrl.init(this);
