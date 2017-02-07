@@ -81,6 +81,9 @@ public class ViewController implements Initializable {
     }
 
     public void update() {
+        if(txtPathFormation.getText() == null){
+            txtPathFormation.setText("");
+        }
         elevesPath = new File(txtPathEleve.getText());
         folderPath = txtPathFormation.getText().replace("[eleve]", "");
         lstEleves.getItems().clear();
@@ -156,11 +159,19 @@ public class ViewController implements Initializable {
         wrk.saveConfig(fc.showSaveDialog(lstEleves.getScene().getWindow()), elevesPath, folderPath);
     }
 
-    public void setElevesPath(File elevesPath) {
-        txtPathEleve.setText(elevesPath.getAbsolutePath());
+    public void setElevesPath(File path) {
+        if (path != null) {
+            txtPathEleve.setText(path.getAbsolutePath());
+        } else {
+            txtPathEleve.setText("");
+        }
     }
 
-    public void setFolderPath(String folderPath) {
-        txtPathFormation.setText(folderPath);
+    public void setFolderPath(String path) {
+        if (path != null) {
+            txtPathFormation.setText(folderPath);
+        } else {
+            txtPathFormation.setText("");
+        }
     }
 }

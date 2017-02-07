@@ -34,7 +34,7 @@ public class ConfigWorker {
     private ArrayList<String> keywords;
     private ArrayList<Eleve> eleves;
     private ArrayList<Eleve> ignoredEleves;
-    
+
     private HashMap<String, TabController> ctrls;
 
     public ConfigWorker() {
@@ -75,7 +75,7 @@ public class ConfigWorker {
     }
 
     public ArrayList<Eleve> updateEleves(File elevesPath, String folderPath) {
-        if (elevesPath != null) {
+        if (elevesPath != null && elevesPath.isDirectory()) {
             eleves.clear();
             for (File file : elevesPath.listFiles()) {
                 if (file.isDirectory()) {
@@ -85,27 +85,28 @@ public class ConfigWorker {
                     }
                 }
             }
-        }
-        if (eleves.size() < elevesPath.listFiles().length) {
-            ListView<String> lstProblemes = new ListView<>();
-            ArrayList<String> elevesString = new ArrayList<>();
-            for (Eleve eleve : eleves) {
-                elevesString.add(eleve.toString());
-            }
-            for (File file : elevesPath.listFiles()) {
-                if (!elevesString.contains(file.getName()) && file.isDirectory()) {
-                    lstProblemes.getItems().add(file.getName());
+
+            if (eleves.size() < elevesPath.listFiles().length) {
+                ListView<String> lstProblemes = new ListView<>();
+                ArrayList<String> elevesString = new ArrayList<>();
+                for (Eleve eleve : eleves) {
+                    elevesString.add(eleve.toString());
                 }
-            }
-            if (!lstProblemes.getItems().isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setHeaderText(lstProblemes.getItems().size() + " répertoires d'élèves ne contiennent pas le repertoire du dossier de formation");
-                alert.getDialogPane().setExpandableContent(lstProblemes);
-                alert.showAndWait();
+                for (File file : elevesPath.listFiles()) {
+                    if (!elevesString.contains(file.getName()) && file.isDirectory()) {
+                        lstProblemes.getItems().add(file.getName());
+                    }
+                }
+                if (!lstProblemes.getItems().isEmpty()) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setHeaderText(lstProblemes.getItems().size() + " répertoires d'élèves ne contiennent pas le repertoire du dossier de formation");
+                    alert.getDialogPane().setExpandableContent(lstProblemes);
+                    alert.showAndWait();
+                }
             }
         }
         ElevesController ctrl = (ElevesController) ctrls.get("Eleves");
-        //ctrl.update(eleves);
+        ctrl.update();
         return eleves;
     }
 
