@@ -154,7 +154,10 @@ public class ConfigWorker {
                 fis.close();
                 loadConfig(config, viewCtrl);
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                 alert.setTitle("Erreur à l'ouverture du fichier");
+                 alert.setHeaderText("Le fichier n'a pas pu être ouvert. Il est peut-être corrompu");
+                 alert.showAndWait();
             }
         }
     }
