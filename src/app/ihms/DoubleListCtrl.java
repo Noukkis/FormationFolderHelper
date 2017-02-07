@@ -37,7 +37,7 @@ public abstract class DoubleListCtrl implements Initializable, TabController {
     public void update() {
         lstLeft.getItems().clear();
         lstRight.getItems().clear();
-        lstLeft.getItems().addAll();
+        lstLeft.getItems().addAll(fillList());
     }
     
     protected abstract List fillList();
@@ -47,6 +47,7 @@ public abstract class DoubleListCtrl implements Initializable, TabController {
         this.wrk = wrk;
         lstLeft.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         lstRight.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        update();
     }
 
     @FXML
