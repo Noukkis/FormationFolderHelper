@@ -5,11 +5,11 @@
  */
 package app.ihms;
 
-import app.beans.Module;
 import app.workers.ConfigWorker;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -21,8 +21,8 @@ import javafx.scene.control.SelectionMode;
  * @author Jordan
  */
 public abstract class DoubleListCtrl implements Initializable, TabController {
-    
-    protected ConfigWorker wrk;
+
+    private ConfigWorker wrk;
 
     @FXML
     protected ListView lstLeft;
@@ -34,21 +34,19 @@ public abstract class DoubleListCtrl implements Initializable, TabController {
         // TODO
     }
 
-    public void update() {
-        lstLeft.getItems().clear();
-        lstRight.getItems().clear();
-        lstLeft.getItems().addAll(fillList());
-    }
-    
-    protected abstract List fillList();
-        
     @Override
     public void init(ConfigWorker wrk) {
         this.wrk = wrk;
         lstLeft.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         lstRight.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        update();
+        lstLeft.setItems(loadListLeft(wrk));
+        lstRight.setItems(loadListRight(wrk));
+
     }
+    
+    protected abstract ObservableList loadListLeft(ConfigWorker wrk);
+    
+    protected abstract ObservableList loadListRight(ConfigWorker wrk);
 
     @FXML
     private void everythingToRight(ActionEvent event) {
@@ -62,7 +60,7 @@ public abstract class DoubleListCtrl implements Initializable, TabController {
 
     @FXML
     private void toLeft(ActionEvent event) {
-         toLeft(lstRight.getSelectionModel().getSelectedItems());
+        toLeft(lstRight.getSelectionModel().getSelectedItems());
     }
 
     @FXML
@@ -74,12 +72,12 @@ public abstract class DoubleListCtrl implements Initializable, TabController {
         lstRight.getItems().addAll(items);
         lstLeft.getItems().removeAll(items);
     }
-    
+
     public void toLeft(List items) {
         lstLeft.getItems().addAll(items);
         lstRight.getItems().removeAll(items);
     }
-    
+
     public ListView getLstLeft() {
         return lstLeft;
     }

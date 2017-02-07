@@ -9,17 +9,17 @@ import app.beans.Eleve;
 import app.workers.ConfigWorker;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.Scanner;
+import javafx.beans.property.ListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.stage.FileChooser;
 
 /**
@@ -34,18 +34,21 @@ public class ElevesController extends DoubleListCtrl{
         FileChooser chooser = new FileChooser();
         File choosen = chooser.showOpenDialog(lstLeft.getScene().getWindow());
         if (choosen != null) {
-            super.update();
             ArrayList<String> list = new ArrayList<>();
             Scanner sc = new Scanner(choosen);
             while (sc.hasNext()) {
                 list.add(sc.nextLine());
             }
-            for (Eleve eleve : wrk.getEleves()) {
+            
+            ArrayList toChange = new ArrayList();
+            for (Object eleve : lstLeft.getItems()) {
                 if (!list.contains(eleve.toString())) {
-                    lstLeft.getItems().remove(eleve);
-                    lstRight.getItems().add(eleve);
+                    toChange.add(eleve);
                 }
             }
+            
+            lstLeft.getItems().removeAll(toChange);
+            lstRight.getItems().addAll(toChange);
             if (list.size() > lstLeft.getItems().size()) {
                 ListView<String> lstProblemes = new ListView<>();
                 ArrayList<String> elevesString = new ArrayList<>();
@@ -67,8 +70,13 @@ public class ElevesController extends DoubleListCtrl{
     }
 
     @Override
-    protected List fillList() {
-        return wrk.getEleves();
+    protected ObservableList loadListRight(ConfigWorker wrk) {
+        return wrk.getIgnoredEleves();
+    }
+
+    @Override
+    protected ObservableList loadListLeft(ConfigWorker wrk) {
+       return wrk.getEleves();
     }
 
 }

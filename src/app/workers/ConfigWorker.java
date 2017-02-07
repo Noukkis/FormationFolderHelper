@@ -2,11 +2,6 @@ package app.workers;
 
 import app.beans.Eleve;
 import app.beans.Module;
-import app.ihms.DoubleListCtrl;
-import app.ihms.ElevesController;
-import app.ihms.KeywordsController;
-import app.ihms.TabController;
-import app.ihms.ViewController;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,9 +10,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.css.SimpleStyleableStringProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 
@@ -29,21 +31,21 @@ import javafx.scene.control.ListView;
  */
 public class ConfigWorker {
 
-    private ArrayList<Module> modules;
-    private ArrayList<Module> ignoredModules;
+    private ObservableList<Module> modules;
+    private ObservableList<Module> ignoredModules;
     private ArrayList<String> keywords;
-    private ArrayList<Eleve> eleves;
-    private ArrayList<Eleve> ignoredEleves;
-
-    private HashMap<String, TabController> ctrls;
+    private ObservableList<Eleve> eleves;
+    private ObservableList<Eleve> ignoredEleves;
+    
+    private File elevesPath;
+    private String folderPath;
 
     public ConfigWorker() {
-        modules = new ArrayList<>();
-        eleves = new ArrayList<>();
+        modules = FXCollections.observableArrayList();
+        eleves = FXCollections.observableArrayList();
         keywords = new ArrayList<>();
-        ctrls = new HashMap<>();
-        ignoredEleves = new ArrayList<>();
-        ignoredModules = new ArrayList<>();
+        ignoredEleves = FXCollections.observableArrayList();
+        ignoredModules = FXCollections.observableArrayList();
     }
 
     public void init() {
@@ -74,7 +76,7 @@ public class ConfigWorker {
         return true;
     }
 
-    public ArrayList<Eleve> updateEleves(File elevesPath, String folderPath) {
+    public ObservableList<Eleve> updateEleves(File elevesPath, String folderPath) {
         if (elevesPath != null && elevesPath.isDirectory()) {
             eleves.clear();
             for (File file : elevesPath.listFiles()) {
@@ -105,36 +107,15 @@ public class ConfigWorker {
                 }
             }
         }
-        ElevesController ctrl = (ElevesController) ctrls.get("Eleves");
-        ctrl.update();
         return eleves;
     }
 
-    public ArrayList<Module> getModules() {
-        return modules;
-    }
-
-    public ArrayList<String> getKeywords() {
-        return keywords;
-    }
-
-    public ArrayList<Eleve> getEleves() {
-        return eleves;
-    }
-
-    public HashMap<String, TabController> getCtrls() {
-        return ctrls;
-    }
-
-    public void saveConfig(File savePath, File elevesPath, String folderPath) {
+    public void saveConfig(File savePath) {
         if (savePath != null) {
             try {
                 FileOutputStream fos = new FileOutputStream(savePath);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
-                ElevesController elevesCtrl = (ElevesController) ctrls.get("Eleves");
-                DoubleListCtrl modulesCtrl = (DoubleListCtrl) ctrls.get("Modules");
-                Config config = new Config(elevesCtrl.getLstLeft().getItems(), elevesCtrl.getLstRight().getItems(),
-                        modules, modulesCtrl.getLstRight().getItems(), folderPath, elevesPath);
+                Config config = new Config(eleves, ignoredEleves, modules, ignoredModules, folderPath, elevesPath);
                 oos.writeObject(config);
                 oos.close();
                 fos.close();
@@ -144,7 +125,7 @@ public class ConfigWorker {
         }
     }
 
-    public void loadConfig(File savePath, ViewController viewCtrl) {
+    public void loadConfig(File savePath) {
         if (savePath != null) {
             try {
                 FileInputStream fis = new FileInputStream(savePath);
@@ -152,29 +133,59 @@ public class ConfigWorker {
                 Config config = (Config) ois.readObject();
                 ois.close();
                 fis.close();
-                loadConfig(config, viewCtrl);
+                loadConfig(config);
             } catch (IOException | ClassNotFoundException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                 alert.setTitle("Erreur à l'ouverture du fichier");
-                 alert.setHeaderText("Le fichier n'a pas pu être ouvert. Il est peut-être corrompu");
-                 alert.showAndWait();
+                alert.setTitle("Erreur à l'ouverture du fichier");
+                alert.setHeaderText("Le fichier n'a pas pu être ouvert. Il est peut-être corrompu");
+                alert.showAndWait();
             }
         }
     }
 
-    private void loadConfig(Config config, ViewController viewCtrl) {
-        ElevesController elevesCtrl = (ElevesController) ctrls.get("Eleves");
-        DoubleListCtrl modulesCtrl = (DoubleListCtrl) ctrls.get("Modules");
-        KeywordsController keywordsCtrl = (KeywordsController) ctrls.get("Keywords");
-        modules = config.getModules();
-        eleves = config.getAllEleves();
-        viewCtrl.setElevesPath(config.getElevesPath());
-        viewCtrl.setFolderPath(config.getFolderPath());
-        viewCtrl.update();
-        elevesCtrl.update();
-        modulesCtrl.update();
-        elevesCtrl.toRight(config.getIgnoredEleves());
-        modulesCtrl.toRight(config.getIgnoredModules(modules));
-        keywordsCtrl.init(this);
+    private void loadConfig(Config config) {
+        modules.setAll(config.getModules());
+        eleves.setAll(config.getEleves());
+        ignoredModules.setAll(config.getIgnoredModules());
+        ignoredEleves.setAll(config.getIgnoredEleves());
+        elevesPath = config.getElevesPath();
+        folderPath = config.getFolderPath();
     }
+    
+    public ObservableList<Module> getModules() {
+        return modules;
+    }
+
+    public ArrayList<String> getKeywords() {
+        return keywords;
+    }
+
+    public ObservableList<Eleve> getEleves() {
+        return eleves;
+    }
+
+    public ObservableList<Module> getIgnoredModules() {
+        return ignoredModules;
+    }
+
+    public ObservableList<Eleve> getIgnoredEleves() {
+        return ignoredEleves;
+    }
+
+    public File getElevesPath() {
+        return elevesPath;
+    }
+
+    public void setElevesPath(File elevesPath) {
+        this.elevesPath = elevesPath;
+    }
+
+    public String getFolderPath() {
+        return folderPath;
+    }
+
+    public void setFolderPath(String folderPath) {
+        this.folderPath = folderPath;
+    }
+    
 }

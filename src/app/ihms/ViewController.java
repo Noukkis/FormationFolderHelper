@@ -38,8 +38,6 @@ public class ViewController implements Initializable {
     private ConfigWorker wrk;
     private HashMap<Tab, TabController> tabs;
 
-    File elevesPath;
-    String folderPath;
     @FXML
     private Tab tabMain;
     @FXML
@@ -62,9 +60,9 @@ public class ViewController implements Initializable {
         tabs = new HashMap<>();
         wrk.init();
         try {
-            wrk.getCtrls().put("Keywords", initTab(tabKeywords, "KeywordsView"));
-            wrk.getCtrls().put("Modules", initTab(tabModules, "ModulesView"));
-            wrk.getCtrls().put("Eleves", initTab(tabEleves, "ElevesView"));
+            initTab(tabKeywords, "KeywordsView");
+            initTab(tabModules, "ModulesView");
+            initTab(tabEleves, "ElevesView");
         } catch (IOException ex) {
             Logger.getLogger(ViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -84,10 +82,10 @@ public class ViewController implements Initializable {
         if(txtPathFormation.getText() == null){
             txtPathFormation.setText("");
         }
-        elevesPath = new File(txtPathEleve.getText());
-        folderPath = txtPathFormation.getText().replace("[eleve]", "");
+        wrk.setElevesPath(new File(txtPathEleve.getText()));
+        wrk.setFolderPath(txtPathFormation.getText().replace("[eleve]", ""));
         lstEleves.getItems().clear();
-        lstEleves.getItems().addAll(wrk.updateEleves(elevesPath, folderPath));
+        lstEleves.getItems().addAll(wrk.updateEleves(wrk.getElevesPath(), wrk.getFolderPath()));
     }
 
     public void quitter() {
@@ -107,8 +105,8 @@ public class ViewController implements Initializable {
     @FXML
     private void searchPathFormation(ActionEvent event) {
         File defaut = null;
-        if (elevesPath != null && elevesPath.isDirectory()) {
-            for (File file : elevesPath.listFiles()) {
+        if (wrk.getElevesPath() != null && wrk.getElevesPath().isDirectory()) {
+            for (File file : wrk.getElevesPath().listFiles()) {
                 if (file.isDirectory()) {
                     defaut = file;
                     break;
@@ -119,7 +117,7 @@ public class ViewController implements Initializable {
             DirectoryChooser chooser = new DirectoryChooser();
             chooser.setInitialDirectory(defaut);
             File choosen = chooser.showDialog(txtPathFormation.getScene().getWindow());
-            if (choosen != null && choosen.getAbsolutePath().contains(elevesPath.getAbsolutePath())) {
+            if (choosen != null && choosen.getAbsolutePath().contains(wrk.getElevesPath().getAbsolutePath())) {
                 txtPathFormation.setText(choosen.getAbsolutePath().replace(chooser.getInitialDirectory().getAbsolutePath(), "[eleve]"));
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -148,7 +146,10 @@ public class ViewController implements Initializable {
         FileChooser fc = new FileChooser();
         fc.setInitialFileName("config");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier de config ffh", "*.ffh"));
-        wrk.loadConfig(fc.showOpenDialog(lstEleves.getScene().getWindow()), this);
+        wrk.loadConfig(fc.showOpenDialog(lstEleves.getScene().getWindow()));
+        txtPathEleve.setText(wrk.getElevesPath().getAbsolutePath());
+        txtPathFormation.setText(wrk.getFolderPath());
+        update();
     }
 
     @FXML
@@ -156,7 +157,7 @@ public class ViewController implements Initializable {
         FileChooser fc = new FileChooser();
         fc.setInitialFileName("config");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier de config ffh", "*.ffh"));
-        wrk.saveConfig(fc.showSaveDialog(lstEleves.getScene().getWindow()), elevesPath, folderPath);
+        wrk.saveConfig(fc.showSaveDialog(lstEleves.getScene().getWindow()));
     }
 
     public void setElevesPath(File path) {
@@ -169,7 +170,7 @@ public class ViewController implements Initializable {
 
     public void setFolderPath(String path) {
         if (path != null) {
-            txtPathFormation.setText(folderPath);
+            txtPathFormation.setText(wrk.getFolderPath());
         } else {
             txtPathFormation.setText("");
         }

@@ -7,12 +7,13 @@ package app.workers;
 
 import app.beans.Eleve;
 import app.beans.Module;
-import app.ihms.ElevesController;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -23,7 +24,7 @@ public class Config implements Serializable {
     private ArrayList<Eleve> eleves;
     private ArrayList<Eleve> ignoredEleves;
     private HashMap<String, HashMap<String, Boolean>> modules;
-    private ArrayList<String> ignoredModules;
+    private HashMap<String, HashMap<String, Boolean>> ignoredModules;
     private String folderPath;
     private File elevesPath;
 
@@ -35,10 +36,14 @@ public class Config implements Serializable {
         this.folderPath = folderPath;
         this.elevesPath = elevesPath;
         this.modules = new HashMap<>();
-        this.ignoredModules = new ArrayList<>();
+        this.ignoredModules = new HashMap<>();
 
         for (Module module : ignoredModules) {
-            this.ignoredModules.add(module.toString());
+            HashMap<String, Boolean> bools = new HashMap<>();
+            for (String keyword : module.getKeywords().keySet()) {
+                bools.put(keyword, module.getKeywords().get(keyword).getValue());
+            }
+            this.ignoredModules.put(module.toString(), bools);
         }
 
         for (Module module : modules) {
@@ -54,26 +59,16 @@ public class Config implements Serializable {
         return eleves;
     }
 
-    public ArrayList<Eleve> getIgnoredEleves() {
-        return ignoredEleves;
+    public ObservableList<Eleve> getIgnoredEleves() {
+        return FXCollections.observableArrayList(ignoredEleves);
     }
 
-    public ArrayList<Module> getModules() {
-        ArrayList<Module> res = new ArrayList<>();
-        for (String name : modules.keySet()) {
-            res.add(new Module(name, modules.get(name)));
-        }
-        return res;
+    public ObservableList<Module> getModules() {
+       return unserializeModule(modules);
     }
 
-    public ArrayList<Module> getIgnoredModules(ArrayList<Module> modules) {
-        ArrayList<Module> res = new ArrayList<>();
-        for (Module module : modules) {
-            if (ignoredModules.contains(module.toString())) {
-                res.add(module);
-            }
-        }
-        return res;
+    public ObservableList<Module> getIgnoredModules() {
+        return unserializeModule(ignoredModules);
     }
 
     public String getFolderPath() {
@@ -84,10 +79,11 @@ public class Config implements Serializable {
         return elevesPath;
     }
 
-    public ArrayList<Eleve> getAllEleves() {
-        ArrayList<Eleve> res = new ArrayList<>(eleves);
-        res.addAll(ignoredEleves);
+    private ObservableList<Module> unserializeModule(HashMap<String, HashMap<String, Boolean>> modules){
+        ObservableList<Module> res = FXCollections.observableArrayList();
+        for (String module : modules.keySet()) {
+            res.add(new Module(module, modules.get(module)));
+        }
         return res;
     }
-
 }

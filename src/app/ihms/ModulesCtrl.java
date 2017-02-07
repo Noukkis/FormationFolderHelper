@@ -6,7 +6,7 @@
 package app.ihms;
 
 import app.workers.ConfigWorker;
-import java.util.List;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -15,8 +15,13 @@ import java.util.List;
 public class ModulesCtrl extends DoubleListCtrl{
 
     @Override
-    protected List fillList() {
+    protected ObservableList loadListLeft(ConfigWorker wrk) {
         return wrk.getModules();
+    }
+
+    @Override
+    protected ObservableList loadListRight(ConfigWorker wrk) {
+       return wrk.getIgnoredModules();
     }
     
 }

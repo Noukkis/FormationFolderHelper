@@ -36,7 +36,7 @@ public class KeywordsController implements Initializable,  TabController{
         this.wrk = wrk;
         tableConf.getItems().clear();
         tableConf.getColumns().clear();
-        tableConf.getItems().addAll(wrk.getModules());
+        tableConf.setItems(wrk.getModules());
         TableColumn<Module, String> colName = new TableColumn<>("Module");
         colName.setPrefWidth(75);
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
