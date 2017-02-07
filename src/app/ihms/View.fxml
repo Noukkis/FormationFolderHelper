@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ihms.ViewController">
+   <top>
+      <MenuBar prefHeight="0.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Fichier">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#loadConfig" text="Charger config" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveConfig" text="Sauver config" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <center>
+      <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab fx:id="tabMain" text="Principal">
+               <content>
+                  <GridPane>
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="294.6666259765625" minWidth="10.0" prefWidth="211.33331298828125" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="407.3333740234375" minWidth="10.0" prefWidth="388.66668701171875" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Label text="Eleves" />
+                              <ListView fx:id="lstEleves" prefHeight="297.0" prefWidth="127.0">
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </VBox.margin>
+                              </ListView>
+                           </children>
+                        </VBox>
+                        <GridPane prefHeight="301.0" prefWidth="388.0" GridPane.columnIndex="1">
+                          <columnConstraints>
+                            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints maxHeight="111.33331298828125" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="231.0" vgrow="SOMETIMES" />
+                            <RowConstraints maxHeight="134.0" valignment="CENTER" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <FlowPane alignment="CENTER_LEFT" prefHeight="24.0" prefWidth="389.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="379.0" text="Emplacement des eleves" />
+                                    <TextField fx:id="txtPathEleve" onAction="#txtPathOnAction" prefHeight="25.0" prefWidth="282.0" />
+                                    <Button mnemonicParsing="false" onAction="#searchPathEleve" prefHeight="25.0" prefWidth="82.0" text="Rechercher">
+                                       <FlowPane.margin>
+                                          <Insets left="5.0" />
+                                       </FlowPane.margin>
+                                    </Button>
+                                 </children>
+                              </FlowPane>
+                              <FlowPane alignment="CENTER_LEFT" prefHeight="96.0" prefWidth="389.0" GridPane.rowIndex="1">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="379.0" text="Emplacement du dossier de formation par eleve" />
+                                    <TextField fx:id="txtPathFormation" onAction="#txtPathOnAction" prefHeight="25.0" prefWidth="282.0" />
+                                    <Button mnemonicParsing="false" onAction="#searchPathFormation" prefHeight="25.0" prefWidth="82.0" text="Rechercher">
+                                       <FlowPane.margin>
+                                          <Insets left="5.0" />
+                                       </FlowPane.margin>
+                                    </Button>
+                                 </children>
+                              </FlowPane>
+                              <Button mnemonicParsing="false" onAction="#onLaunch" prefHeight="63.0" prefWidth="180.0" text="Lancer" GridPane.rowIndex="2">
+                                 <GridPane.margin>
+                                    <Insets right="20.0" />
+                                 </GridPane.margin>
+                                 <font>
+                                    <Font size="24.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </GridPane>
+                     </children>
+                  </GridPane>
+               </content></Tab>
+            <Tab fx:id="tabEleves" text="Eleves" />
+            <Tab fx:id="tabModules" text="Modules" />
+            <Tab fx:id="tabKeywords" text="Mots clés" />
+        </tabs>
+      </TabPane>
+   </center>
+</BorderPane>
