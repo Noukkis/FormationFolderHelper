@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ihms.config;
+package app.ihms;
 
 import app.beans.Eleve;
-import app.workers.ConfigWorker;
+import app.workers.config.ConfigWorker;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;

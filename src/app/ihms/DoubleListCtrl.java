@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ihms.config;
+package app.ihms;
 
-import app.workers.ConfigWorker;
+import app.workers.config.ConfigWorker;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;

@@ -3,15 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ihms.config;
+package app.workers;
 
-import app.workers.ConfigWorker;
+import app.workers.config.ConfigWorker;
 
 /**
  *
  * @author Jordan
  */
-public interface TabCtrl {
-
-    void init(ConfigWorker wrk);
+public class Worker {
+    
+    public Worker(ConfigWorker conf){
+        
+    }
 }

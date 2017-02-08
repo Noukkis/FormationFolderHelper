@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ihms.config;
+package app.ihms;
 
 import app.beans.Eleve;
-import app.workers.ConfigWorker;
+import app.ihms.ViewCtrl;
+import app.workers.Worker;
+import app.workers.config.ConfigWorker;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -21,19 +22,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 /**
  *
  * @author Jordan
  */
-public class ViewCtrl implements Initializable {
+public class ConfigViewCtrl implements Initializable {
 
     private ConfigWorker wrk;
     private HashMap<Tab, TabCtrl> tabs;
@@ -62,7 +64,7 @@ public class ViewCtrl implements Initializable {
             initTab(tabModules, "ModulesView");
             initTab(tabEleves, "ElevesView");
         } catch (IOException ex) {
-            Logger.getLogger(ViewCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConfigViewCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -77,7 +79,7 @@ public class ViewCtrl implements Initializable {
     }
 
     public void update() {
-        if(txtPathFormation.getText() == null){
+        if (txtPathFormation.getText() == null) {
             txtPathFormation.setText("");
         }
         wrk.setElevesPath(new File(txtPathEleve.getText()));
@@ -132,6 +134,24 @@ public class ViewCtrl implements Initializable {
 
     @FXML
     private void onLaunch(ActionEvent event) {
+        Stage stage = (Stage) lstEleves.getScene().getWindow();
+        stage.close();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("View.fxml"));
+        try {
+           Parent root = (Parent) loader.load();
+
+            // Récupère le controleur
+            ViewCtrl ctrl = loader.getController();
+            ctrl.init(new Worker(wrk));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("FFH");
+            stage.show();
+
+            stage.setOnCloseRequest(e -> ctrl.quitter());
+        } catch (IOException ex) {
+            Logger.getLogger(ConfigViewCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @FXML

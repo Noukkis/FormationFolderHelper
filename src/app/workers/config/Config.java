@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.workers;
+package app.workers.config;
 
 import app.beans.Eleve;
 import app.beans.Module;

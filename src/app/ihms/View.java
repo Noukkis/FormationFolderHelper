@@ -1,4 +1,4 @@
-package app.ihms.config;
+package app.ihms;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,12 +14,11 @@ public class View extends Application {
   
   @Override
   public void start(Stage stage) throws Exception {
-    //Parent root = FXMLLoader.load(getClass().getResource("View.fxml"));
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("View.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("ConfigView.fxml"));
     Parent root = (Parent) loader.load();
     
     // Récupère le controleur
-    ViewCtrl ctrl = loader.getController();
+    ConfigViewCtrl ctrl = loader.getController();
     
     Scene scene = new Scene(root);
     stage.setScene(scene);
@@ -29,5 +28,4 @@ public class View extends Application {
     stage.setOnCloseRequest(e -> ctrl.quitter());
 
   }
-
 }

@@ -1,7 +1,9 @@
-package app.workers;
+package app.workers.config;
 
 import app.beans.Eleve;
 import app.beans.Module;
+import app.ihms.View;
+import app.ihms.ConfigViewCtrl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,17 +13,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.css.SimpleStyleableStringProperty;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
+import javafx.stage.Stage;
 
 /**
  * Cette interface définit les services de la couche "métier" de l'application.
@@ -36,7 +36,7 @@ public class ConfigWorker {
     private ArrayList<String> keywords;
     private ObservableList<Eleve> eleves;
     private ObservableList<Eleve> ignoredEleves;
-    
+
     private File elevesPath;
     private String folderPath;
 
@@ -151,7 +151,7 @@ public class ConfigWorker {
         elevesPath = config.getElevesPath();
         folderPath = config.getFolderPath();
     }
-    
+
     public ObservableList<Module> getModules() {
         return modules;
     }
@@ -187,5 +187,4 @@ public class ConfigWorker {
     public void setFolderPath(String folderPath) {
         this.folderPath = folderPath;
     }
-    
 }

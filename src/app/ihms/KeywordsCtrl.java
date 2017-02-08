@@ -1,7 +1,7 @@
-package app.ihms.config;
+package app.ihms;
 
+import app.workers.config.ConfigWorker;
 import app.beans.Module;
-import app.workers.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
