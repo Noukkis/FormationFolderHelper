@@ -17,16 +17,16 @@ import javafx.fxml.Initializable;
  */
 public class ViewCtrl implements Initializable {
 
-    /**
-     * Initializes the controller class.
-     */
+    Worker wrk;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }
     
     public void init(Worker wrk){
-        
+        this.wrk = wrk;
+        wrk.makeXML();
     }
     
     public void quitter(){

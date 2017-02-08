@@ -26,4 +26,16 @@ public class Eleve implements Serializable{
     public String toString(){
         return name;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public File getDirectory() {
+        return directory;
+    }
+
+    public void setDirectory(File directory) {
+        this.directory = directory;
+    }
 }
