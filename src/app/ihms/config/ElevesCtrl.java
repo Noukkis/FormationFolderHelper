@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ihms;
+package app.ihms.config;
 
 import app.beans.Eleve;
 import app.workers.ConfigWorker;
@@ -27,7 +27,7 @@ import javafx.stage.FileChooser;
  *
  * @author Jordan
  */
-public class ElevesController extends DoubleListCtrl{
+public class ElevesCtrl extends DoubleListCtrl{
         
     @FXML
     private void loadList(ActionEvent event) throws FileNotFoundException {

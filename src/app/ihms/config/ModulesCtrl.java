@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ihms;
+package app.ihms.config;
 
 import app.workers.ConfigWorker;
 import javafx.collections.ObservableList;

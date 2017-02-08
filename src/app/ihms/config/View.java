@@ -1,4 +1,4 @@
-package app.ihms;
+package app.ihms.config;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +19,7 @@ public class View extends Application {
     Parent root = (Parent) loader.load();
     
     // Récupère le controleur
-    ViewController ctrl = loader.getController();
+    ViewCtrl ctrl = loader.getController();
     
     Scene scene = new Scene(root);
     stage.setScene(scene);

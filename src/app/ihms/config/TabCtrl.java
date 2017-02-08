@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ihms;
+package app.ihms.config;
 
 import app.workers.ConfigWorker;
 
@@ -11,7 +11,7 @@ import app.workers.ConfigWorker;
  *
  * @author Jordan
  */
-public interface TabController {
+public interface TabCtrl {
 
     void init(ConfigWorker wrk);
 }

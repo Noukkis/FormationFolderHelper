@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ihms;
+package app.ihms.config;
 
 import app.workers.ConfigWorker;
 import java.net.URL;
@@ -20,7 +20,7 @@ import javafx.scene.control.SelectionMode;
  *
  * @author Jordan
  */
-public abstract class DoubleListCtrl implements Initializable, TabController {
+public abstract class DoubleListCtrl implements Initializable, TabCtrl {
 
     private ConfigWorker wrk;
 

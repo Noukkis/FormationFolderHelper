@@ -1,4 +1,4 @@
-package app.ihms;
+package app.ihms.config;
 
 import app.beans.Module;
 import app.workers.*;
@@ -20,7 +20,7 @@ import javafx.util.Callback;
  *
  * @author PA
  */
-public class KeywordsController implements Initializable,  TabController{
+public class KeywordsCtrl implements Initializable,  TabCtrl{
 
     private ConfigWorker wrk;
 

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ihms;
+package app.ihms.config;
 
 import app.beans.Eleve;
 import app.workers.ConfigWorker;
@@ -33,13 +33,11 @@ import javafx.stage.FileChooser;
  *
  * @author Jordan
  */
-public class ViewController implements Initializable {
+public class ViewCtrl implements Initializable {
 
     private ConfigWorker wrk;
-    private HashMap<Tab, TabController> tabs;
+    private HashMap<Tab, TabCtrl> tabs;
 
-    @FXML
-    private Tab tabMain;
     @FXML
     private Tab tabModules;
     @FXML
@@ -64,14 +62,14 @@ public class ViewController implements Initializable {
             initTab(tabModules, "ModulesView");
             initTab(tabEleves, "ElevesView");
         } catch (IOException ex) {
-            Logger.getLogger(ViewController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ViewCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private TabController initTab(Tab tab, String fxml) throws IOException {
+    private TabCtrl initTab(Tab tab, String fxml) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml + ".fxml"));
         Parent root = (Parent) loader.load();
-        TabController ctrl = loader.getController();
+        TabCtrl ctrl = loader.getController();
         ctrl.init(wrk);
         tab.setContent(root);
         tabs.put(tab, ctrl);
