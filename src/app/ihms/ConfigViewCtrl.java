@@ -136,19 +136,16 @@ public class ConfigViewCtrl implements Initializable {
     private void onLaunch(ActionEvent event) {
         Stage stage = (Stage) lstEleves.getScene().getWindow();
         stage.close();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("View.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Progress.fxml"));
         try {
-           Parent root = (Parent) loader.load();
-
-            // Récupère le controleur
-            ViewCtrl ctrl = loader.getController();
-            ctrl.init(new Worker(wrk));
+            Parent root = (Parent) loader.load();
+            ProgressCtrl ctrl = loader.getController();
+            Worker worker = new Worker(wrk);
+            ctrl.init(worker);
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.setTitle("FFH");
+            stage.setTitle("Veuillez patienter");
             stage.show();
-
-            stage.setOnCloseRequest(e -> ctrl.quitter());
         } catch (IOException ex) {
             Logger.getLogger(ConfigViewCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -164,10 +161,11 @@ public class ConfigViewCtrl implements Initializable {
         FileChooser fc = new FileChooser();
         fc.setInitialFileName("config");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier de config ffh", "*.ffh"));
-        wrk.loadConfig(fc.showOpenDialog(lstEleves.getScene().getWindow()));
-        txtPathEleve.setText(wrk.getElevesPath().getAbsolutePath());
-        txtPathFormation.setText(wrk.getFolderPath());
-        update();
+        if (wrk.loadConfig(fc.showOpenDialog(lstEleves.getScene().getWindow()))) {
+            txtPathEleve.setText(wrk.getElevesPath().getAbsolutePath());
+            txtPathFormation.setText(wrk.getFolderPath());
+            update();
+        }
     }
 
     @FXML

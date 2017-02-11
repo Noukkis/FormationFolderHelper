@@ -125,7 +125,7 @@ public class ConfigWorker {
         }
     }
 
-    public void loadConfig(File savePath) {
+    public boolean loadConfig(File savePath) {
         if (savePath != null) {
             try {
                 FileInputStream fis = new FileInputStream(savePath);
@@ -140,7 +140,10 @@ public class ConfigWorker {
                 alert.setHeaderText("Le fichier n'a pas pu être ouvert. Il est peut-être corrompu");
                 alert.showAndWait();
             }
+        } else {
+            return false;
         }
+        return true;
     }
 
     private void loadConfig(Config config) {

@@ -8,7 +8,10 @@ package app.ihms;
 import app.workers.Worker;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Dialog;
+import javafx.scene.layout.BorderPane;
 
 /**
  * FXML Controller class
@@ -18,18 +21,19 @@ import javafx.fxml.Initializable;
 public class ViewCtrl implements Initializable {
 
     Worker wrk;
-    
+    @FXML
+    private BorderPane pane;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }
-    
-    public void init(Worker wrk){
+
+    public void init(Worker wrk) {
         this.wrk = wrk;
-        wrk.makeXML();
     }
-    
-    public void quitter(){
-        
+
+    public void quitter() {
+
     }
 }

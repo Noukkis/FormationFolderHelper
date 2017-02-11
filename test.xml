@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Eleves>
+    <Eleve name="Marie">
+        <Module name="403">
+            <Keyword name="Evaluation" present="true"/>
+            <Keyword name="pr" present="true"/>
+            <Keyword name="im" present="true"/>
+            <Keyword name="co" present="true"/>
+            <Keyword name="RP" present="true"/>
+        </Module>
+        <Module name="404">
+            <Keyword name="Evaluation" present="true"/>
+            <Keyword name="pr" present="true"/>
+            <Keyword name="im" present="true"/>
+            <Keyword name="co" present="true"/>
+            <Keyword name="RP" present="false"/>
+        </Module>
+        <Module name="226a">
+            <Keyword name="Evaluation" present="true"/>
+            <Keyword name="pr" present="true"/>
+            <Keyword name="im" present="true"/>
+            <Keyword name="co" present="true"/>
+            <Keyword name="RP" present="false"/>
+        </Module>
+        <Module name="120">
+            <Keyword name="Evaluation" present="true"/>
+            <Keyword name="pr" present="true"/>
+            <Keyword name="im" present="true"/>
+            <Keyword name="co" present="true"/>
+            <Keyword name="RP" present="true"/>
+        </Module>
+        <Module name="226b">
+            <Keyword name="Evaluation" present="true"/>
+            <Keyword name="pr" present="true"/>
+            <Keyword name="im" present="true"/>
+            <Keyword name="co" present="true"/>
+            <Keyword name="RP" present="true"/>
+        </Module>
+    </Eleve>
+    <Eleve name="Pierre">
+        <Module name="403">
+            <Keyword name="Evaluation" present="true"/>
+            <Keyword name="pr" present="true"/>
+            <Keyword name="im" present="true"/>
+            <Keyword name="co" present="true"/>
+            <Keyword name="RP" present="true"/>
+        </Module>
+        <Module name="404">
+            <Keyword name="Evaluation" present="true"/>
+            <Keyword name="pr" present="true"/>
+            <Keyword name="im" present="false"/>
+            <Keyword name="co" present="true"/>
+            <Keyword name="RP" present="true"/>
+        </Module>
+        <Module name="226a">
+            <Keyword name="Evaluation" present="false"/>
+            <Keyword name="pr" present="false"/>
+            <Keyword name="im" present="false"/>
+            <Keyword name="co" present="false"/>
+            <Keyword name="RP" present="false"/>
+        </Module>
+        <Module name="120">
+            <Keyword name="Evaluation" present="true"/>
+            <Keyword name="pr" present="true"/>
+            <Keyword name="im" present="true"/>
+            <Keyword name="co" present="true"/>
+            <Keyword name="RP" present="true"/>
+        </Module>
+        <Module name="226b">
+            <Keyword name="Evaluation" present="true"/>
+            <Keyword name="pr" present="true"/>
+            <Keyword name="im" present="true"/>
+            <Keyword name="co" present="true"/>
+            <Keyword name="RP" present="true"/>
+        </Module>
+    </Eleve>
+</Eleves>
