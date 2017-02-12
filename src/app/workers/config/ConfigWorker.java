@@ -2,8 +2,6 @@ package app.workers.config;
 
 import app.beans.Eleve;
 import app.beans.Module;
-import app.ihms.View;
-import app.ihms.ConfigViewCtrl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,16 +10,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.Scanner;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
-import javafx.stage.Stage;
 
 /**
  * Cette interface définit les services de la couche "métier" de l'application.
@@ -36,6 +34,7 @@ public class ConfigWorker {
     private ArrayList<String> keywords;
     private ObservableList<Eleve> eleves;
     private ObservableList<Eleve> ignoredEleves;
+    private ObservableList<Entry<String, BooleanProperty>> othersWords;
 
     private File elevesPath;
     private String folderPath;
@@ -46,13 +45,14 @@ public class ConfigWorker {
         keywords = new ArrayList<>();
         ignoredEleves = FXCollections.observableArrayList();
         ignoredModules = FXCollections.observableArrayList();
+        othersWords = FXCollections.observableArrayList();
     }
 
     public void init() {
-        makeModules("./resources/modulesList.txt", "./resources/keywordsList.txt");
+        makeKeywords("./resources/modulesList.txt", "./resources/keywordsList.txt");
     }
 
-    private boolean makeModules(String pathModules, String pathKeywords) {
+    private boolean makeKeywords(String pathModules, String pathKeywords) {
         try {
             Scanner readModules = new Scanner(new File(pathModules));
             while (readModules.hasNext()) {
@@ -62,7 +62,12 @@ public class ConfigWorker {
             keywords = new ArrayList<>();
             Scanner readKeywords = new Scanner(new File(pathKeywords));
             while (readKeywords.hasNext()) {
-                keywords.add(readKeywords.nextLine());
+                String keyword = readKeywords.nextLine();
+                if(keyword.startsWith(">")){
+                    othersWords.put(keyword.replaceFirst(">", ""), new SimpleBooleanProperty(true));
+                } else {
+                keywords.add(keyword);
+                }
             }
 
         } catch (FileNotFoundException e) {
@@ -115,7 +120,7 @@ public class ConfigWorker {
             try {
                 FileOutputStream fos = new FileOutputStream(savePath);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
-                Config config = new Config(eleves, ignoredEleves, modules, ignoredModules, folderPath, elevesPath);
+                Config config = new Config(eleves, ignoredEleves, modules, ignoredModules, othersWords, folderPath, elevesPath);
                 oos.writeObject(config);
                 oos.close();
                 fos.close();
@@ -151,6 +156,8 @@ public class ConfigWorker {
         eleves.setAll(config.getEleves());
         ignoredModules.setAll(config.getIgnoredModules());
         ignoredEleves.setAll(config.getIgnoredEleves());
+        othersWords.clear();
+        othersWords.putAll(config.getOtherWords());
         elevesPath = config.getElevesPath();
         folderPath = config.getFolderPath();
     }
@@ -189,5 +196,9 @@ public class ConfigWorker {
 
     public void setFolderPath(String folderPath) {
         this.folderPath = folderPath;
+    }
+
+    public ObservableList<Entry<String, BooleanProperty>> getOthersWords() {
+        return othersWords;
     }
 }

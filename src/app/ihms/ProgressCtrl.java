@@ -49,17 +49,17 @@ public class ProgressCtrl implements Initializable {
             Stage stage = (Stage) label.getScene().getWindow();
             stage.close();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("View.fxml"));
-        try {
-            Parent root = (Parent) loader.load();
-            ViewCtrl ctrl = loader.getController();
-            ctrl.init(wrk);
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle("FFH");
-            stage.show();
-        } catch (IOException ex) {
-            Logger.getLogger(ConfigViewCtrl.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            try {
+                Parent root = (Parent) loader.load();
+                ViewCtrl ctrl = loader.getController();
+                ctrl.init(wrk);
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
+                stage.setTitle("FFH");
+                stage.show();
+            } catch (IOException ex) {
+                Logger.getLogger(ConfigViewCtrl.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         );
     }

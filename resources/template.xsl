@@ -9,7 +9,7 @@
             
             <h3><span style="font-size:18px;">Eleve : <xsl:value-of select="@name"/></span></h3>
             
-            <h3><span style="font-size:18px;">Complet a <xsl:value-of select="100 * count(Module/Keyword[@present='true']) div count(Module/Keyword)"/>%</span></h3>
+            <h3><span style="font-size:18px;">Complet a <xsl:value-of select="round(100 * count(Module/Keyword[@present='true']) div count(Module/Keyword))"/>%</span></h3>
             
             <hr />
             <xsl:for-each select="Module">

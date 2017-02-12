@@ -110,4 +110,12 @@ public class Worker {
         return res.toString();
     }
 
+    public ArrayList<Eleve> getEleves() {
+        return eleves;
+    }
+
+    public HashMap<Eleve, String> getElevesHtml() {
+        return elevesHtml;
+    }
+
 }

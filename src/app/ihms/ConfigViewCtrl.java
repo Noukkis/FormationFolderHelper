@@ -162,7 +162,9 @@ public class ConfigViewCtrl implements Initializable {
         fc.setInitialFileName("config");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier de config ffh", "*.ffh"));
         if (wrk.loadConfig(fc.showOpenDialog(lstEleves.getScene().getWindow()))) {
-            txtPathEleve.setText(wrk.getElevesPath().getAbsolutePath());
+            if (wrk.getElevesPath() != null && wrk.getElevesPath().exists()) {
+                txtPathEleve.setText(wrk.getElevesPath().getAbsolutePath());
+            }
             txtPathFormation.setText(wrk.getFolderPath());
             update();
         }

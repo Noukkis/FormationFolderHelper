@@ -12,6 +12,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -25,19 +28,25 @@ public class Config implements Serializable {
     private ArrayList<Eleve> ignoredEleves;
     private HashMap<String, HashMap<String, Boolean>> modules;
     private HashMap<String, HashMap<String, Boolean>> ignoredModules;
+    private HashMap<String, Boolean> otherWords;
     private String folderPath;
     private File elevesPath;
 
     public Config(List<Eleve> eleves, List<Eleve> ignoredEleves, List<Module> modules,
-            List<Module> ignoredModules, String folderPath, File elevesPath) {
+            List<Module> ignoredModules, Map<String, BooleanProperty> otherWords, String folderPath, File elevesPath) {
 
+        this.otherWords = new HashMap<>();
         this.eleves = new ArrayList<>(eleves);
         this.ignoredEleves = new ArrayList<>(ignoredEleves);
         this.folderPath = folderPath;
         this.elevesPath = elevesPath;
         this.modules = new HashMap<>();
         this.ignoredModules = new HashMap<>();
-
+        
+        if(folderPath == null){
+            this.folderPath = "";
+        }
+        
         for (Module module : ignoredModules) {
             HashMap<String, Boolean> bools = new HashMap<>();
             for (String keyword : module.getKeywords().keySet()) {
@@ -52,6 +61,10 @@ public class Config implements Serializable {
                 bools.put(keyword, module.getKeywords().get(keyword).getValue());
             }
             this.modules.put(module.toString(), bools);
+        }
+        
+        for (String word : otherWords.keySet()) {
+            this.otherWords.put(word, otherWords.get(word).getValue());
         }
     }
 
@@ -77,6 +90,14 @@ public class Config implements Serializable {
 
     public File getElevesPath() {
         return elevesPath;
+    }
+
+    public HashMap<String, BooleanProperty> getOtherWords() {
+        HashMap<String, BooleanProperty> res = new HashMap<>();
+        for (String word : otherWords.keySet()) {
+            res.put(word, new SimpleBooleanProperty(otherWords.get(word)));
+        }
+        return res;
     }
 
     private ObservableList<Module> unserializeModule(HashMap<String, HashMap<String, Boolean>> modules){
