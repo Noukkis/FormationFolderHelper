@@ -19,7 +19,6 @@ public class Eleve implements Serializable {
 
     String name;
     File directory;
-
     ArrayList<String> arborescence;
 
     public Eleve(String name, File directory) {
