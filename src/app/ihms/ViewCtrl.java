@@ -15,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 
 /**
  * FXML Controller class
@@ -49,10 +50,15 @@ public class ViewCtrl implements Initializable {
     }
 
     @FXML
-    private void OnSave(ActionEvent event) {
+    private void onMail(ActionEvent event) {
+        wrk.sendMails();
     }
 
     @FXML
-    private void onMail(ActionEvent event) {
+    private void onSave(ActionEvent event) {
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier XML", "*.xml"));
+        fc.setSelectedExtensionFilter(fc.getExtensionFilters().get(0));
+        wrk.saveXml(fc.showSaveDialog(pane.getScene().getWindow()));
     }
 }

@@ -7,25 +7,23 @@ package app.workers;
 
 import app.beans.Eleve;
 import app.beans.Module;
-import app.ihms.ConfigViewCtrl;
-import app.ihms.ProgressCtrl;
-import app.ihms.ViewCtrl;
+import app.beans.OtherWord;
+import app.helpers.ProgressDialog;
 import app.workers.config.ConfigWorker;
-import java.io.IOException;
+import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -42,22 +40,25 @@ public class Worker {
 
     private ArrayList<Module> modules;
     private ArrayList<Eleve> eleves;
+    private ArrayList<OtherWord> otherwords;
 
+    Document doc;
     private HashMap<Eleve, String> elevesHtml;
 
-    public Worker(ConfigWorker conf) {
+    public Worker(ConfigWorker conf) throws ParserConfigurationException {
         modules = new ArrayList<>(conf.getModules());
         eleves = new ArrayList<>(conf.getEleves());
         elevesHtml = new HashMap<>();
+        otherwords = new ArrayList<>(conf.getOthersWords());
+        doc = doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();;
     }
 
-    public Task init() {
+    public void init() {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 int progressMax = eleves.size() * 2;
                 int progress = 0;
-                Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
                 Element root = doc.createElement("Eleves");
                 doc.appendChild(root);
                 for (Eleve eleveBean : eleves) {
@@ -77,14 +78,15 @@ public class Worker {
         };
         Thread t = new Thread(task);
         t.start();
-        return task;
+        ProgressDialog dialog = new ProgressDialog(task);
+        dialog.showAndWait();
     }
 
     private Element addToXML(Document doc, Eleve eleveBean) {
         Element eleve = doc.createElement("Eleve");
         eleve.setAttribute("name", eleveBean.getName());
         for (Module moduleBean : modules) {
-            Element module = doc.createElement("Module");
+            Element module = doc.createElement("Categorie");
             eleve.appendChild(module);
             module.setAttribute("name", moduleBean.toString());
             for (String s : moduleBean.getKeywords().keySet()) {
@@ -95,6 +97,15 @@ public class Worker {
                     keyword.setAttribute("present", Boolean.toString(eleveBean.hasKeyword(moduleBean, s)));
                 }
             }
+        }
+        Element otherword = doc.createElement("Categorie");
+        eleve.appendChild(otherword);
+        otherword.setAttribute("name", "Autres");
+        for (OtherWord word : otherwords) {
+            Element keyword = doc.createElement("Keyword");
+            otherword.appendChild(keyword);
+            keyword.setAttribute("name", word.getName().replaceAll("[\\/>]", ""));
+            keyword.setAttribute("present", Boolean.toString(eleveBean.hasKeyword(new Module("Ce string n'est pas censé apparaitre"), word.getName())));
         }
         return eleve;
     }
@@ -118,4 +129,22 @@ public class Worker {
         return elevesHtml;
     }
 
+    public void sendMails() {
+
+    }
+
+    public void saveXml(File path) {
+        if (path != null) {
+            try {
+                Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+                Result output = new StreamResult(path);
+                Source input = new DOMSource(doc);
+                transformer.transform(input, output);
+            } catch (TransformerException ex) {
+                Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 }

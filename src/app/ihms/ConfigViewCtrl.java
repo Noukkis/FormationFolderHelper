@@ -136,15 +136,16 @@ public class ConfigViewCtrl implements Initializable {
     private void onLaunch(ActionEvent event) {
         Stage stage = (Stage) lstEleves.getScene().getWindow();
         stage.close();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Progress.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("View.fxml"));
         try {
             Parent root = (Parent) loader.load();
-            ProgressCtrl ctrl = loader.getController();
+            ViewCtrl ctrl = loader.getController();
             Worker worker = new Worker(wrk);
+            worker.init();
             ctrl.init(worker);
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            stage.setTitle("Veuillez patienter");
+            stage.setTitle("FFH");
             stage.show();
         } catch (IOException ex) {
             Logger.getLogger(ConfigViewCtrl.class.getName()).log(Level.SEVERE, null, ex);

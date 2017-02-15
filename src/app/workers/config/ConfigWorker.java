@@ -2,6 +2,7 @@ package app.workers.config;
 
 import app.beans.Eleve;
 import app.beans.Module;
+import app.beans.OtherWord;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,13 +10,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.MapProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -34,7 +36,7 @@ public class ConfigWorker {
     private ArrayList<String> keywords;
     private ObservableList<Eleve> eleves;
     private ObservableList<Eleve> ignoredEleves;
-    private ObservableList<Entry<String, BooleanProperty>> othersWords;
+    private ObservableList<OtherWord> othersWords;
 
     private File elevesPath;
     private String folderPath;
@@ -64,7 +66,7 @@ public class ConfigWorker {
             while (readKeywords.hasNext()) {
                 String keyword = readKeywords.nextLine();
                 if(keyword.startsWith(">")){
-                    othersWords.put(keyword.replaceFirst(">", ""), new SimpleBooleanProperty(true));
+                    othersWords.add(new OtherWord(keyword));
                 } else {
                 keywords.add(keyword);
                 }
@@ -152,12 +154,13 @@ public class ConfigWorker {
     }
 
     private void loadConfig(Config config) {
-        modules.setAll(config.getModules());
+        modules.clear();
+        modules.addAll(config.getModules());
         eleves.setAll(config.getEleves());
         ignoredModules.setAll(config.getIgnoredModules());
         ignoredEleves.setAll(config.getIgnoredEleves());
         othersWords.clear();
-        othersWords.putAll(config.getOtherWords());
+        othersWords.addAll(config.getOtherWords());
         elevesPath = config.getElevesPath();
         folderPath = config.getFolderPath();
     }
@@ -198,7 +201,7 @@ public class ConfigWorker {
         this.folderPath = folderPath;
     }
 
-    public ObservableList<Entry<String, BooleanProperty>> getOthersWords() {
+    public ObservableList<OtherWord> getOthersWords() {
         return othersWords;
     }
 }

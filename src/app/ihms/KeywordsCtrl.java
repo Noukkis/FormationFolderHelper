@@ -1,15 +1,15 @@
 package app.ihms;
 
-import app.workers.config.ConfigWorker;
 import app.beans.Module;
+import app.beans.OtherWord;
+import app.workers.config.ConfigWorker;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.MapChangeListener;
+import javafx.beans.property.SimpleListProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
@@ -19,25 +19,27 @@ import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+
+
 /**
  *
  * @author PA
  */
-public class KeywordsCtrl implements Initializable,  TabCtrl{
+public class KeywordsCtrl implements Initializable, TabCtrl {
 
     private ConfigWorker wrk;
 
     @FXML
     private TableView<Module> tableConf;
     @FXML
-    private ListView<Entry<String, BooleanProperty>> lstOthers;
+    private ListView<OtherWord> lstOthers;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        }
-    
+    }
+
     @Override
-    public void init(ConfigWorker wrk){
+    public void init(ConfigWorker wrk) {
         this.wrk = wrk;
         tableConf.getItems().clear();
         tableConf.getColumns().clear();
@@ -54,13 +56,9 @@ public class KeywordsCtrl implements Initializable,  TabCtrl{
             colKeyword.setCellFactory(chk -> new CheckBoxTableCell<>());
             tableConf.getColumns().add(colKeyword);
         }
-        lstOthers.getItems().setAll(wrk.getOthersWords());
-        lstOthers.setCellFactory(CheckBoxListCell.forListView((String item) -> {
-            BooleanProperty observable = new SimpleBooleanProperty();
-            observable.bindBidirectional(wrk.getOthersWords().get(item));
-            return observable ;
+         lstOthers.itemsProperty().bind(new SimpleListProperty<>(wrk.getOthersWords()));
+        lstOthers.setCellFactory(CheckBoxListCell.forListView((OtherWord item) -> {
+             return item.getActive();          
         }));
-        
-        wrk.getOthersWords().b;
     }
 }

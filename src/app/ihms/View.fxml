@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.web.WebView?>
 
-
 <BorderPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="763.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.ihms.ViewCtrl">
    <left>
       <ListView fx:id="lstEleves" prefHeight="380.0" prefWidth="147.0" BorderPane.alignment="CENTER">
@@ -26,7 +25,7 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" prefHeight="38.0" prefWidth="763.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#OnSave" text="Enregistrer XML">
+            <Button mnemonicParsing="false" onAction="#onSave" text="Enregistrer XML">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin>

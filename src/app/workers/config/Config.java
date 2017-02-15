@@ -7,13 +7,14 @@ package app.workers.config;
 
 import app.beans.Eleve;
 import app.beans.Module;
+import app.beans.OtherWord;
 import java.io.File;
 import java.io.Serializable;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javafx.beans.property.BooleanProperty;
+import java.util.Map.Entry;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,7 +34,7 @@ public class Config implements Serializable {
     private File elevesPath;
 
     public Config(List<Eleve> eleves, List<Eleve> ignoredEleves, List<Module> modules,
-            List<Module> ignoredModules, Map<String, BooleanProperty> otherWords, String folderPath, File elevesPath) {
+            List<Module> ignoredModules,List<OtherWord> otherWords, String folderPath, File elevesPath) {
 
         this.otherWords = new HashMap<>();
         this.eleves = new ArrayList<>(eleves);
@@ -63,8 +64,8 @@ public class Config implements Serializable {
             this.modules.put(module.toString(), bools);
         }
         
-        for (String word : otherWords.keySet()) {
-            this.otherWords.put(word, otherWords.get(word).getValue());
+        for (OtherWord word : otherWords) {
+            this.otherWords.put(word.getName(), word.getActive().getValue());
         }
     }
 
@@ -92,10 +93,10 @@ public class Config implements Serializable {
         return elevesPath;
     }
 
-    public HashMap<String, BooleanProperty> getOtherWords() {
-        HashMap<String, BooleanProperty> res = new HashMap<>();
-        for (String word : otherWords.keySet()) {
-            res.put(word, new SimpleBooleanProperty(otherWords.get(word)));
+    public ArrayList<OtherWord> getOtherWords() {
+        ArrayList<OtherWord> res = new ArrayList<>();
+        for (String s : otherWords.keySet()) {
+            res.add(new OtherWord(s, new SimpleBooleanProperty(otherWords.get(s))));
         }
         return res;
     }
