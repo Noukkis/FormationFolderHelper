@@ -132,6 +132,7 @@ public class ConfigViewCtrl implements Initializable {
         update();
     }
 
+    
     @FXML
     private void onLaunch(ActionEvent event) {
         Stage stage = (Stage) lstEleves.getScene().getWindow();
