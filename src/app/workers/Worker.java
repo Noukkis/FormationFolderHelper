@@ -12,18 +12,26 @@ import app.helpers.ProgressDialog;
 import app.workers.config.ConfigWorker;
 import java.io.File;
 import java.io.StringWriter;
+import static java.lang.ProcessBuilder.Redirect.to;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -45,12 +53,17 @@ public class Worker {
     Document doc;
     private HashMap<Eleve, String> elevesHtml;
 
-    public Worker(ConfigWorker conf) throws ParserConfigurationException {
+    public Worker(ConfigWorker conf) {
         modules = new ArrayList<>(conf.getModules());
         eleves = new ArrayList<>(conf.getEleves());
         elevesHtml = new HashMap<>();
         otherwords = new ArrayList<>(conf.getOthersWords());
-        doc = doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();;
+        try {
+            doc = doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ;
     }
 
     public void init() {
@@ -59,6 +72,7 @@ public class Worker {
             protected Void call() throws Exception {
                 int progressMax = eleves.size() * 2;
                 int progress = 0;
+                updateProgress(progress, progressMax);
                 Element root = doc.createElement("Eleves");
                 doc.appendChild(root);
                 for (Eleve eleveBean : eleves) {
@@ -129,8 +143,24 @@ public class Worker {
         return elevesHtml;
     }
 
-    public void sendMails() {
-
+    public void sendMails(String adresse, String serveur) {
+        try {
+            Properties p = System.getProperties();
+            Session s = Session.getDefaultInstance(p);
+            p.setProperty("mail.smtp.host", serveur);
+            MimeMessage m = new MimeMessage(s);
+            m.setFrom(new InternetAddress(adresse));
+            m.setSubject("Rapport de dossier de formation");
+            for (Eleve eleve : eleves) {
+                m.setRecipient(Message.RecipientType.TO, new InternetAddress(eleve.getName() + "@studentfr.ch"));
+                m.setContent(elevesHtml.get(eleve), "text/html");
+                Transport.send(m);
+            }
+        } catch (MessagingException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur mail");
+            alert.setHeaderText("Erreur lors de l'envoie des mails");
+        }
     }
 
     public void saveXml(File path) {

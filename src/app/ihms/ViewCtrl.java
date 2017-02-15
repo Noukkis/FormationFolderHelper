@@ -6,8 +6,10 @@
 package app.ihms;
 
 import app.beans.Eleve;
+import app.helpers.DoubleTextDialog;
 import app.workers.Worker;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,6 +18,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 
 /**
  * FXML Controller class
@@ -51,7 +54,14 @@ public class ViewCtrl implements Initializable {
 
     @FXML
     private void onMail(ActionEvent event) {
-        wrk.sendMails();
+        DoubleTextDialog dialog = new DoubleTextDialog();
+        dialog.setFillForced(true);
+        dialog.setTitle("Envoye Mails");
+        dialog.getFirstLabel().setText("Votre adresse mail :");
+        dialog.getSecondLabel().setText("Serveur smtp :");
+        Optional<Pair<String, String>> option = dialog.showAndWait();
+        option.ifPresent(pair -> wrk.sendMails(pair.getKey(), pair.getValue()));
+            
     }
 
     @FXML

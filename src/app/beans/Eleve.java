@@ -6,11 +6,10 @@
 package app.beans;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  *
@@ -21,53 +20,52 @@ public class Eleve implements Serializable {
     String name;
     File directory;
 
+    ArrayList<String> arborescence;
+
     public Eleve(String name, File directory) {
         this.name = name;
         this.directory = directory;
     }
 
     public boolean hasKeyword(Module module, String keyword) {
-        ArrayList<File> files = listFiles(directory);
-        switch (keyword.charAt(0)) {
-            case '/':
-                for (File folder : files) {
-                    if (folder.getAbsolutePath().endsWith("\\" + module.toString() + keyword.replace("/", "\\")) && folder.list() != null && folder.list().length > 0) {
-                        return true;
-                    }
-                }
-                break;
-            case '>':
-                for (File folder : files) {
-                    if (folder.getAbsolutePath().contains(keyword.replace(">", ""))) {
-                        return true;
-                    }
-                }
-                break;
-            default:
-                for (File folder : files) {
-                    if (folder.getAbsolutePath().endsWith("\\" + module.toString() + "\\Descriptif")) {
-                        for (File file : listFiles(folder)) {
-                            if (file.getName().contains(keyword)) {
-                                return true;
-                            }
+        if (arborescence == null) {
+            arborescence = new ArrayList<>();
+            listFiles(directory);
+        }
+        if (keyword != null && keyword.length() > 0) {
+            switch (keyword.charAt(0)) {
+                case '/':
+                    for (String s : arborescence) {
+                        if (s.matches(".*" + module.toString().toLowerCase() + "\\\\" + keyword.replace("/", "").toLowerCase() + "\\\\.*")) {
+                            return true;
                         }
                     }
-                }
+                    break;
+                case '>':
+                    for (String s : arborescence) {
+                        if (s.contains(keyword.replace(">", ""))) {
+                            return true;
+                        }
+                    }
+                    break;
+                default:
+                    for (String s : arborescence) {
+                        if (s.matches(".*" + module.toString().toLowerCase() + "\\\\descriptif\\\\.*" + keyword + ".*")) {
+                            return true;
+                        }
+                    }
+            }
         }
         return false;
     }
 
-    public ArrayList<File> listFiles(File mainDir) {
-        ArrayList<File> res = new ArrayList<>();
-        if (mainDir.isDirectory()) {
-            res.addAll(Arrays.asList(mainDir.listFiles()));
-            ArrayList<File> subs = new ArrayList<>();
-            for (File file : res) {
-                subs.addAll(listFiles(file));
+    public void listFiles(File dir) {
+        arborescence.add(dir.getAbsolutePath().replace(directory.getAbsolutePath(), "").toLowerCase());
+        if (dir.isDirectory()) {
+            for (File file : dir.listFiles()) {
+                listFiles(file);
             }
-            res.addAll(subs);
         }
-        return res;
     }
 
     @Override
