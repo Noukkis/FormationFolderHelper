@@ -20,6 +20,7 @@ public class Eleve implements Serializable {
 
     String name;
     File directory;
+    ArrayList<File> arborescence;
 
     public Eleve(String name, File directory) {
         this.name = name;
@@ -27,38 +28,36 @@ public class Eleve implements Serializable {
     }
 
     public boolean hasKeyword(Module module, String keyword) {
-        ArrayList<File> files = listFiles(directory);
+        if (arborescence == null) {
+            arborescence = listFiles(directory);
+        }
         switch (keyword.charAt(0)) {
             case '/':
-                for (File folder : files) {
+                for (File folder : arborescence) {
                     if (folder.getAbsolutePath().endsWith("\\" + module.toString() + keyword.replace("/", "\\")) && folder.list() != null && folder.list().length > 0) {
                         return true;
                     }
                 }
                 break;
             case '>':
-                for (File folder : files) {
+                for (File folder : arborescence) {
                     if (folder.getAbsolutePath().contains(keyword.replace(">", ""))) {
                         return true;
                     }
                 }
                 break;
             default:
-                for (File folder : files) {
-                    if (folder.getAbsolutePath().endsWith("\\" + module.toString() + "\\Descriptif")) {
-                        for (File file : listFiles(folder)) {
-                            if (file.getName().contains(keyword)) {
+                for (File folder : arborescence) {
+                    if (folder.getAbsolutePath().contains("\\" + module.toString() + "\\Descriptif")) {
                                 return true;
-                            }
-                        }
                     }
                 }
         }
         return false;
     }
 
-    public ArrayList<File> listFiles(File mainDir) {
-        ArrayList<File> res = new ArrayList<>();
+    private ArrayList<File> listFiles(File mainDir) {
+         ArrayList<File> res = new ArrayList<>();
         if (mainDir.isDirectory()) {
             res.addAll(Arrays.asList(mainDir.listFiles()));
             ArrayList<File> subs = new ArrayList<>();

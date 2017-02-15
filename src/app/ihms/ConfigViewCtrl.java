@@ -30,6 +30,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  *
@@ -148,6 +149,8 @@ public class ConfigViewCtrl implements Initializable {
             stage.setTitle("FFH");
             stage.show();
         } catch (IOException ex) {
+            Logger.getLogger(ConfigViewCtrl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParserConfigurationException ex) {
             Logger.getLogger(ConfigViewCtrl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
