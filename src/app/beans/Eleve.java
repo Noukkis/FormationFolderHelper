@@ -5,6 +5,7 @@
  */
 package app.beans;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,10 +21,12 @@ public class Eleve implements Serializable {
     String name;
     File directory;
     ArrayList<String> arborescence;
+    String color;
 
     public Eleve(String name, File directory) {
         this.name = name;
         this.directory = directory;
+        color = "black";
     }
 
     public boolean hasKeyword(Module module, String keyword) {
@@ -83,4 +86,13 @@ public class Eleve implements Serializable {
     public void setDirectory(File directory) {
         this.directory = directory;
     }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+    
 }

@@ -8,17 +8,16 @@ package app.workers;
 import app.beans.Eleve;
 import app.beans.Module;
 import app.beans.OtherWord;
-import app.helpers.ProgressDialog;
 import app.workers.config.ConfigWorker;
 import java.io.File;
 import java.io.StringWriter;
-import static java.lang.ProcessBuilder.Redirect.to;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.concurrent.Task;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -37,8 +36,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -47,19 +51,22 @@ import org.w3c.dom.Element;
 public class Worker {
 
     private ArrayList<Module> modules;
-    private ArrayList<Eleve> eleves;
+    private ObservableList<Eleve> eleves;
     private ArrayList<OtherWord> otherwords;
 
     Document doc;
+    Element root;
     private HashMap<Eleve, String> elevesHtml;
 
     public Worker(ConfigWorker conf) {
         modules = new ArrayList<>(conf.getModules());
-        eleves = new ArrayList<>(conf.getEleves());
+        eleves = FXCollections.observableArrayList(conf.getEleves());
         elevesHtml = new HashMap<>();
         otherwords = new ArrayList<>(conf.getOthersWords());
         try {
             doc = doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            root = doc.createElement("Eleves");
+            doc.appendChild(root);
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -67,61 +74,25 @@ public class Worker {
     }
 
     public void init() {
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                int progressMax = eleves.size() * 2;
-                int progress = 0;
-                updateProgress(progress, progressMax);
-                Element root = doc.createElement("Eleves");
-                doc.appendChild(root);
-                for (Eleve eleveBean : eleves) {
-                    root.appendChild(addToXML(doc, eleveBean));
-                    progress++;
-                    updateProgress(progress, progressMax);
-                    updateMessage("Création du fichier XML (" + progress + "/" + eleves.size() + ")");
-                }
-                for (Eleve eleve : eleves) {
-                    progress++;
-                    updateProgress(progress, progressMax);
-                    updateMessage("Transformations XSLT (" + (progress - eleves.size()) + "/" + eleves.size() + ")");
-                    elevesHtml.put(eleve, transform(doc, eleve.getName()));
-                }
-                return null;
-            }
-        };
-        Thread t = new Thread(task);
-        t.start();
-        ProgressDialog dialog = new ProgressDialog(task);
-        dialog.showAndWait();
+        for (Eleve eleve : eleves) {
+            Thread t = new Thread(new EleveVerifier(eleve, this));
+            t.start();
+        }
     }
 
-    private Element addToXML(Document doc, Eleve eleveBean) {
-        Element eleve = doc.createElement("Eleve");
-        eleve.setAttribute("name", eleveBean.getName());
-        for (Module moduleBean : modules) {
-            Element module = doc.createElement("Categorie");
-            eleve.appendChild(module);
-            module.setAttribute("name", moduleBean.toString());
-            for (String s : moduleBean.getKeywords().keySet()) {
-                if (moduleBean.getKeywords().get(s).getValue()) {
-                    Element keyword = doc.createElement("Keyword");
-                    module.appendChild(keyword);
-                    keyword.setAttribute("name", s.replaceAll("[\\/>]", ""));
-                    keyword.setAttribute("present", Boolean.toString(eleveBean.hasKeyword(moduleBean, s)));
-                }
+    public void addToXML(Element eleve, Eleve eleveBean) {
+        try {
+            XPathFactory xpf = XPathFactory.newInstance();
+            XPath path = xpf.newXPath();
+            if (path.evaluate("//Eleve[@name='" + eleveBean.getName() + "']", doc, XPathConstants.NODE) != null) {
+                root.removeChild((Node) path.evaluate("//Eleve[@name='" + eleveBean.getName() + "']", doc, XPathConstants.NODE));
             }
+            eleveBean.setColor("blue");
+            root.appendChild(eleve);
+            elevesHtml.put(eleveBean, transform(doc, eleveBean.getName()));
+        } catch (XPathExpressionException | TransformerException ex) {
+            Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Element otherword = doc.createElement("Categorie");
-        eleve.appendChild(otherword);
-        otherword.setAttribute("name", "Autres");
-        for (OtherWord word : otherwords) {
-            Element keyword = doc.createElement("Keyword");
-            otherword.appendChild(keyword);
-            keyword.setAttribute("name", word.getName().replaceAll("[\\/>]", ""));
-            keyword.setAttribute("present", Boolean.toString(eleveBean.hasKeyword(new Module("Ce string n'est pas censé apparaitre"), word.getName())));
-        }
-        return eleve;
     }
 
     private String transform(Document doc, String eleveName) throws TransformerException {
@@ -135,12 +106,24 @@ public class Worker {
         return res.toString();
     }
 
-    public ArrayList<Eleve> getEleves() {
+    public ObservableList<Eleve> getEleves() {
         return eleves;
     }
 
     public HashMap<Eleve, String> getElevesHtml() {
         return elevesHtml;
+    }
+
+    public ArrayList<Module> getModules() {
+        return modules;
+    }
+
+    public Document getDoc() {
+        return doc;
+    }
+
+    public ArrayList<OtherWord> getOtherwords() {
+        return otherwords;
     }
 
     public void sendMails(String adresse, String serveur) {

@@ -11,9 +11,11 @@ import app.workers.Worker;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleListProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
@@ -37,12 +39,23 @@ public class ViewCtrl implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        lstEleves.setCellFactory((ListView<Eleve> lv) -> new ListCell<Eleve>() {
+            @Override
+            protected void updateItem(Eleve item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    setText(item.toString());
+                    setStyle("-fx-text-fill: " + item.getColor() + " ;");
+                } else {
+                    setText("");
+                }
+            }
+        });
     }
 
     public void init(Worker wrk) {
         this.wrk = wrk;
-        lstEleves.getItems().addAll(wrk.getEleves());
+        lstEleves.itemsProperty().bind(new SimpleListProperty(wrk.getEleves()));
         lstEleves.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             String htmlString = wrk.getElevesHtml().get(newValue);
             if (htmlString != null) {
@@ -50,6 +63,7 @@ public class ViewCtrl implements Initializable {
             }
         });
         lstEleves.getSelectionModel().select(0);
+
     }
 
     @FXML
@@ -61,7 +75,7 @@ public class ViewCtrl implements Initializable {
         dialog.getSecondLabel().setText("Serveur smtp :");
         Optional<Pair<String, String>> option = dialog.showAndWait();
         option.ifPresent(pair -> wrk.sendMails(pair.getKey(), pair.getValue()));
-            
+
     }
 
     @FXML
