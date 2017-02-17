@@ -8,16 +8,18 @@ package app.workers;
 import app.beans.Eleve;
 import app.beans.Module;
 import app.beans.OtherWord;
+import app.ihms.ViewCtrl;
 import app.workers.config.ConfigWorker;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -51,17 +53,15 @@ import org.w3c.dom.Node;
 public class Worker {
 
     private ArrayList<Module> modules;
-    private ObservableList<Eleve> eleves;
+    private ArrayList<Eleve> eleves;
     private ArrayList<OtherWord> otherwords;
 
     Document doc;
     Element root;
-    private HashMap<Eleve, String> elevesHtml;
 
     public Worker(ConfigWorker conf) {
         modules = new ArrayList<>(conf.getModules());
-        eleves = FXCollections.observableArrayList(conf.getEleves());
-        elevesHtml = new HashMap<>();
+        eleves = new ArrayList<>(conf.getEleves());
         otherwords = new ArrayList<>(conf.getOthersWords());
         try {
             doc = doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
@@ -72,27 +72,23 @@ public class Worker {
         }
         ;
     }
-
-    public void init() {
-        for (Eleve eleve : eleves) {
-            Thread t = new Thread(new EleveVerifier(eleve, this));
-            t.start();
-        }
-    }
-
-    public void addToXML(Element eleve, Eleve eleveBean) {
+    
+    public synchronized Eleve addToXML(Element eleve, Eleve eleveBean) {
         try {
             XPathFactory xpf = XPathFactory.newInstance();
             XPath path = xpf.newXPath();
             if (path.evaluate("//Eleve[@name='" + eleveBean.getName() + "']", doc, XPathConstants.NODE) != null) {
                 root.removeChild((Node) path.evaluate("//Eleve[@name='" + eleveBean.getName() + "']", doc, XPathConstants.NODE));
             }
-            eleveBean.setColor("blue");
             root.appendChild(eleve);
-            elevesHtml.put(eleveBean, transform(doc, eleveBean.getName()));
+            String nbreRate = path.evaluate("count(//Eleve[@name='" + eleveBean.getName() + "']/Categorie/Keyword[@present='false'])", doc);
+            eleveBean.setColor((nbreRate.equals("0")) ? "green" : "red");                    
+            eleveBean.setHtml(transform(doc, eleveBean.getName()));
+            
         } catch (XPathExpressionException | TransformerException ex) {
             Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return eleveBean;
     }
 
     private String transform(Document doc, String eleveName) throws TransformerException {
@@ -105,15 +101,40 @@ public class Worker {
         transformer.transform(new DOMSource(doc), new StreamResult(res));
         return res.toString();
     }
+    
+    public Eleve verifyEleve(Eleve eleveBean){
+        Element eleve = doc.createElement("Eleve");
+        eleve.setAttribute("name", eleveBean.getName());
+        for (Module moduleBean : modules) {
+            Element module = doc.createElement("Categorie");
+            eleve.appendChild(module);
+            module.setAttribute("name", moduleBean.toString());
+            for (String s : moduleBean.getKeywords().keySet()) {
+                if (moduleBean.getKeywords().get(s).getValue()) {
+                    Element keyword = doc.createElement("Keyword");
+                    module.appendChild(keyword);
+                    keyword.setAttribute("name", s.replaceAll("[\\/>]", ""));
+                    keyword.setAttribute("present", Boolean.toString(eleveBean.hasKeyword(moduleBean, s)));
+                }
+            }
+        }
+        Element otherword = doc.createElement("Categorie");
+        eleve.appendChild(otherword);
+        otherword.setAttribute("name", "Autres");
+        for (OtherWord word : otherwords) {
+            Element keyword = doc.createElement("Keyword");
+            otherword.appendChild(keyword);
+            keyword.setAttribute("name", word.getName().replaceAll("[\\/>]", ""));
+            keyword.setAttribute("present", Boolean.toString(eleveBean.hasKeyword(new Module("Ce string n'est pas censé apparaitre"), word.getName())));
+        }
+       
+       return addToXML(eleve, eleveBean);
+    }
 
-    public ObservableList<Eleve> getEleves() {
+    public ArrayList<Eleve> getEleves() {
         return eleves;
     }
-
-    public HashMap<Eleve, String> getElevesHtml() {
-        return elevesHtml;
-    }
-
+    
     public ArrayList<Module> getModules() {
         return modules;
     }
@@ -136,7 +157,7 @@ public class Worker {
             m.setSubject("Rapport de dossier de formation");
             for (Eleve eleve : eleves) {
                 m.setRecipient(Message.RecipientType.TO, new InternetAddress(eleve.getName() + "@studentfr.ch"));
-                m.setContent(elevesHtml.get(eleve), "text/html");
+                m.setContent(eleve.getHtml(), "text/html");
                 Transport.send(m);
             }
         } catch (MessagingException ex) {

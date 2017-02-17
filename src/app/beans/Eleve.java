@@ -22,11 +22,13 @@ public class Eleve implements Serializable {
     File directory;
     ArrayList<String> arborescence;
     String color;
+    String html;
 
     public Eleve(String name, File directory) {
         this.name = name;
         this.directory = directory;
         color = "black";
+        html = "";
     }
 
     public boolean hasKeyword(Module module, String keyword) {
@@ -69,6 +71,10 @@ public class Eleve implements Serializable {
             }
         }
     }
+    
+    public void clearFiles(){
+        arborescence = null;
+    }
 
     @Override
     public String toString() {
@@ -93,6 +99,14 @@ public class Eleve implements Serializable {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public String getHtml() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
     }
     
 }

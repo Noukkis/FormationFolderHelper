@@ -143,7 +143,6 @@ public class ConfigViewCtrl implements Initializable {
             Parent root = (Parent) loader.load();
             ViewCtrl ctrl = loader.getController();
             Worker worker = new Worker(wrk);
-            worker.init();
             ctrl.init(worker);
             Scene scene = new Scene(root);
             stage.setScene(scene);
